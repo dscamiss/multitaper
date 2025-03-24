@@ -1,0 +1,4 @@
+numba
+python>=3.10
+scipy
+scipy-stubs
