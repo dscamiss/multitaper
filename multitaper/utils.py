@@ -33,8 +33,6 @@ Contains:
 # Import main libraries and modules
 # -----------------------------------------------------
 
-import os
-
 import numpy as np
 import scipy
 import scipy.interpolate as interp
@@ -263,8 +261,6 @@ def xint(a, b, tol, vn, npts):
         #   Check for convergence.
         #
 
-        nval = 2 * n
-
         if index == 2:
             if est[index - 1] == est[index - 2]:
                 return x_int
@@ -433,9 +429,8 @@ def dpss(npts, nw, kspec=None):
         x = np.arange(nint)
         y = np.linspace(0, nint - 1, npts, endpoint=True)
         for k in range(kspec):
-            I = interp.interp1d(x, v2int[:, k], kind="quadratic")
-            #'quadratic')
-            v[:, k] = I(y)
+            interpolator = interp.interp1d(x, v2int[:, k], kind="quadratic")
+            v[:, k] = interpolator(y)
             v[:, k] = v[:, k] * np.sqrt(float(nint) / float(npts))
 
     # -----------------------------------------------------
@@ -568,7 +563,6 @@ def dpss2(npts, nw, nev=None):
     else:
         fv2[lh - 1] = r2 * fv2[lh - 1]
 
-    fv3 = fv2[1:lh]
     eigval, v2 = linalg.eigh_tridiagonal(
         fv1, fv2[1:lh], select="i", select_range=(lh - neven, lh - 1)
     )
@@ -782,9 +776,9 @@ def adaptspec(yk, sk, lamb, iadapt=0):
     maximum wt = 1
 
     German Prieto, October 2007
-    Added the an additional subroutine noadaptspec to calculate a simple non-adaptive multitaper spectrum.
-    This can be used in transfer functions and deconvolution,
-    where adaptive methods might not be necesary.
+    Added the an additional subroutine noadaptspec to calculate a simple
+    non-adaptive multitaper spectrum.  This can be used in transfer functions
+    and deconvolution, where adaptive methods might not be necessary.
 
     February 2022. Now calculating adapt weights without for loop.
 
@@ -995,9 +989,7 @@ def jackspec(spec, sk, wt, se):
     # Jackknife mean (Log S)
     # ------------------------------------------------------
 
-    lspec = np.log(spec)
     lsjk = np.log(sjk)
-
     lsjk_mean = np.sum(lsjk, axis=1) / float(kspec)
 
     # ------------------------------------------------------
@@ -1005,7 +997,7 @@ def jackspec(spec, sk, wt, se):
     #   not used (thanks to tigli@github)
     # ------------------------------------------------------
 
-    bjk = float(kspec - 1) * (lspec - lsjk_mean)
+    # bjk = float(kspec - 1) * (lspec - lsjk_mean)
 
     # ------------------------------------------------------
     # Jackknife Variance estimate (Log S)
@@ -1147,7 +1139,6 @@ def qiinv(spec, yk, wt, vn, lamb, nw):
     npts = np.shape(vn)[0]
     kspec = np.shape(vn)[1]
     nfft = np.shape(yk)[0]
-    nfft2 = 11 * nfft
     nxi = 79
     L = kspec * kspec
 
@@ -1169,7 +1160,6 @@ def qiinv(spec, yk, wt, vn, lamb, nw):
     bp = nw / npts  # W bandwidth
     xi = np.linspace(-bp, bp, num=nxi)
     dxi = xi[2] - xi[1]
-    f_qi = scipy.fft.fftfreq(nfft2)
 
     for k in range(kspec):
         xk[:, k] = wt[:, k] * yk[:, k]
@@ -1327,7 +1317,6 @@ def ftest(vn, yk):
 
     """
 
-    npts = np.shape(vn)[0]
     kspec = np.shape(vn)[1]
     nfft = np.shape(yk)[0]
     mu = np.zeros(nfft, dtype=complex)
@@ -1362,7 +1351,7 @@ def ftest(vn, yk):
     # Fcrit - IS the threshhold for 95% test.
     # ------------------------------------------------------
 
-    Fcrit = scipy.stats.f.ppf(0.95, dof1, dof2)
+    # Fcrit = scipy.stats.f.ppf(0.95, dof1, dof2)
     for i in range(nfft):
         Fup = float(kspec - 1) * np.abs(mu[i]) ** 2 * np.sum(vn0**2)
         Fdw = np.sum(np.abs(yk[i, :] - mu[i] * vn0[:]) ** 2)
@@ -1425,11 +1414,10 @@ def yk_reshape(yk_in, vn, p=None, fcrit=0.95):
 
     """
 
+    yk = np.copy(yk_in)
     if p is None:
         print("Doing F test")
-        p = utils.ftest(vn, yk)[1]
-    yk = np.copy(yk_in)
-    npts = np.shape(vn)[0]
+        p = ftest(vn, yk)[1]
     kspec = np.shape(vn)[1]
     nfft = np.shape(yk)[0]
     sline = np.zeros((nfft, 1), dtype=float)
@@ -1539,7 +1527,6 @@ def wt2dof(wt):
 
     """
 
-    nfft = np.shape(wt)[0]
     kspec = np.shape(wt)[1]
 
     # ------------------------------------------------------------
@@ -1626,9 +1613,6 @@ def df_spec(x, y=None, fmin=None, fmax=None):
     if y is None:
         y = x
 
-    kspec = x.kspec
-    nfft = x.nfft
-    nf = x.nf
     freq = x.freq[:, 0]
     if fmin is None:
         fmin = min(abs(freq))
@@ -1638,7 +1622,6 @@ def df_spec(x, y=None, fmin=None, fmax=None):
     # Select frequencies of interest
     floc = np.where((freq >= fmin) & (freq <= fmax))[0]
     freq = freq[floc]
-    nf = len(freq)
 
     # ------------------------------------------------------------
     # Create the cross and/or auto spectra
@@ -1721,7 +1704,6 @@ def df_spec_old(x, y=None, fmin=None, fmax=None):
         y = x
 
     kspec = x.kspec
-    nfft = x.nfft
     nf = x.nf
     freq = x.freq[:, 0]
     if fmin is None:
@@ -1829,14 +1811,14 @@ def sft(x, om):
     tp = 2.0 * pi
 
     np1 = n + 1
-    l = int(np.floor(6.0 * om / tp))
+    ell = int(np.floor(6.0 * om / tp))
     s = np.sin(om)
     a = 0.0
     c = 0.0
     d = 0.0
     e = 0.0
 
-    if l == 0:
+    if ell == 0:
 
         # recursion for low frequencies (.lt. nyq/3)
 
@@ -1848,7 +1830,7 @@ def sft(x, om):
             a = x[np1 - k - 1] + b * d + c
             e = a + d
 
-    elif l == 1:
+    elif ell == 1:
 
         # regular goertzal algorithm for intermediate frequencies
 
@@ -2128,7 +2110,7 @@ def sadapt(nptwo, fx, nf, df, initap, ntimes, fact):
     # in subroutine quick
     #  for uniform weighting c1=1, c2=12.0**0.4=2.702
 
-    c1 = 1.2000
+    # c1 = 1.2000
     c2 = 3.437
 
     # -------------------------------------
@@ -2252,7 +2234,7 @@ def sadapt2(nptwo, fx, nf, df, initap, ntimes, fact):
     # in subroutine quick
     #  for uniform weighting c1=1, c2=12.0**0.4=2.702
 
-    c1 = 1.2000
+    # c1 = 1.2000
     c2 = 3.437
 
     # -----------------------------------------------------------
@@ -2348,7 +2330,6 @@ def north(n, i1, i2, s):
     el = float(L)
     gamma = (el**2 - 1.0) / 12.0
 
-    u0sq = el
     u1sq = el * (el**2 - 1.0) / 12.0
     u2sq = (el * (el**2 - 1.0) * (el**2 - 4.0)) / 180.0
     amid = 0.5 * (el + 1.0)
@@ -2537,7 +2518,7 @@ def copy_examples(path="./multitaper-examples"):
 
     ex_path = pkg_res.resource_filename("multitaper", os.path.join("examples"))
 
-    cex = dir_util.copy_tree(
+    dir_util.copy_tree(
         ex_path,
         path,
         preserve_mode=1,
@@ -2640,7 +2621,6 @@ def qi_deriv(spec, yk, wt, vn, lamb, nw):
     npts = np.shape(vn)[0]
     kspec = np.shape(vn)[1]
     nfft = np.shape(yk)[0]
-    nfft2 = 11 * nfft
     nxi = 79
     L = kspec * kspec
 
@@ -2662,7 +2642,6 @@ def qi_deriv(spec, yk, wt, vn, lamb, nw):
     bp = nw / npts  # W bandwidth
     xi = np.linspace(-bp, bp, num=nxi)
     dxi = xi[2] - xi[1]
-    f_qi = scipy.fft.fftfreq(nfft2)
 
     for k in range(kspec):
         xk[:, k] = wt[:, k] * yk[:, k]

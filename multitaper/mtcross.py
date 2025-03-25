@@ -34,7 +34,6 @@ See module mtspec for univariate problems
 
 import numpy as np
 import scipy
-import scipy.linalg as linalg
 from scipy import signal
 
 import multitaper.mtspec as spec
@@ -194,7 +193,6 @@ class MTCross:
                 y = y[:, np.newaxis]
             if x.shape[0] != y.shape[0]:
                 raise ValueError("Size of arrays must be the same")
-            ndim = x.ndim
             nx = x.shape[1]
             ny = y.shape[1]
             npts = x.shape[0]
@@ -559,7 +557,6 @@ class SineCross:
                 y = y[:, np.newaxis]
             if x.shape[0] != y.shape[0]:
                 raise ValueError("Size of arrays must be the same")
-            ndim = x.ndim
             nx = x.shape[1]
             ny = y.shape[1]
             npts = x.shape[0]
@@ -714,7 +711,6 @@ class SineCross:
         """
 
         nf = self.nf
-        nfft = self.nfft
         npts = self.npts
         trf = self.trf
 
@@ -768,9 +764,7 @@ class SineCross:
         """
 
         nf = self.nf
-        nfft = self.nfft
         npts = self.npts
-        nfft = self.nfft
 
         trf = self.trf
         cohy = self.cohy

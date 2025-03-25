@@ -25,7 +25,6 @@ See module mtcross for bi-variate problems
 
 import numpy as np
 import scipy
-import scipy.linalg as linalg
 import scipy.signal as signal
 
 import multitaper.utils as utils
@@ -857,7 +856,7 @@ class MTSine:
 
         err = np.zeros((nf, 2), dtype=float)
 
-        std = spec / np.sqrt(kopt / 1.2)  # 1 standard deviation
+        # std = spec / np.sqrt(kopt / 1.2)  # 1 standard deviation
         v = 2.0 * kopt / 1.2  # degrees of freedom
 
         err1 = spec / (1 - 2.0 / (9.0 * v) - 1.96 * np.sqrt(2.0 / (9.0 * v))) ** 3
