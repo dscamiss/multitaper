@@ -177,7 +177,7 @@ class MTCross:
         if type(x) is not type(y):
             raise ValueError("X and Y are not similar types")
 
-        if type(x) is np.ndarray:
+        if isinstance(x, np.ndarray):
 
             # -----------------------------------------------------
             # Check dimensions of input vectors
@@ -247,12 +247,12 @@ class MTCross:
             dyk_y[:, k] = wt[:, k] * y.yk[:, k]
 
         # Auto and Cross spectrum
-        Sxy = np.zeros((nfft, 1), dtype=complex)
-        Sxx = np.zeros((nfft, 1), dtype=float)
-        Syy = np.zeros((nfft, 1), dtype=float)
-        Sxx[:, 0] = np.sum(np.abs(dyk_x) ** 2, axis=1)
-        Syy[:, 0] = np.sum(np.abs(dyk_y) ** 2, axis=1)
-        Sxy[:, 0] = np.sum(dyk_x * np.conjugate(dyk_y), axis=1)
+        spec_xy = np.zeros((nfft, 1), dtype=complex)
+        spec_xx = np.zeros((nfft, 1), dtype=float)
+        spec_yy = np.zeros((nfft, 1), dtype=float)
+        spec_xx[:, 0] = np.sum(np.abs(dyk_x) ** 2, axis=1)
+        spec_yy[:, 0] = np.sum(np.abs(dyk_y) ** 2, axis=1)
+        spec_xy[:, 0] = np.sum(dyk_x * np.conjugate(dyk_y), axis=1)
 
         # Get coherence and phase
         cohe = np.zeros((nfft, 1), dtype=float)
@@ -260,12 +260,12 @@ class MTCross:
         trf = np.zeros((nfft, 1), dtype=complex)
         phase = np.zeros((nfft, 1), dtype=float)
 
-        w_lev = wl * np.mean(Syy[:, 0])
+        w_lev = wl * np.mean(spec_yy[:, 0])
         for i in range(nfft):
-            phase[i, 0] = np.arctan2(np.imag(Sxy[i, 0]), np.real(Sxy[i, 0]))
-            cohe[i, 0] = np.abs(Sxy[i, 0]) ** 2 / (Sxx[i, 0] * Syy[i, 0])
-            cohy[i, 0] = Sxy[i, 0] / np.sqrt(Sxx[i, 0] * Syy[i, 0])
-            trf[i, 0] = Sxy[i, 0] / (Syy[i, 0] + w_lev)
+            phase[i, 0] = np.arctan2(np.imag(spec_xy[i, 0]), np.real(spec_xy[i, 0]))
+            cohe[i, 0] = np.abs(spec_xy[i, 0]) ** 2 / (spec_xx[i, 0] * spec_yy[i, 0])
+            cohy[i, 0] = spec_xy[i, 0] / np.sqrt(spec_xx[i, 0] * spec_yy[i, 0])
+            trf[i, 0] = spec_xy[i, 0] / (spec_yy[i, 0] + w_lev)
 
         phase = phase * (180.0 / np.pi)
 
@@ -283,17 +283,15 @@ class MTCross:
         self.npts = npts
         self.iadapt = iadapt
 
-        self.Sxx = Sxx
-        self.Syy = Syy
-        self.Sxy = Sxy
+        self.spec_xx = spec_xx
+        self.spec_yy = spec_yy
+        self.spec_xy = spec_xy
         self.cohe = cohe
         self.cohy = cohy
         self.trf = trf
         self.phase = phase
         self.se = se
         self.wt = wt
-
-        del Sxx, Syy, Sxy, cohe, phase, se, wt
 
     # -------------------------------------------------------------------------
     # Finished INIT mvspec
@@ -387,7 +385,7 @@ class MTCross:
         nfft = self.nfft
         cohy = self.cohy
         trf = self.trf
-        xc = self.Sxy
+        xc = self.spec_xy
 
         xcorr = scipy.fft.ifft(xc[:, 0], nfft)
         xcorr = np.real(scipy.fft.fftshift(xcorr))
@@ -541,27 +539,25 @@ class SineCross:
         if type(x) is not type(y):
             raise ValueError("X and Y are not similar types")
 
-        if type(x) is np.ndarray:
+        # -----------------------------------------------------
+        # Check dimensions of input vectors
+        # -----------------------------------------------------
 
-            # -----------------------------------------------------
-            # Check dimensions of input vectors
-            # -----------------------------------------------------
-
-            xdim = x.ndim
-            ydim = y.ndim
-            if xdim > 2 or ydim > 2:
-                raise ValueError("Arrays cannot by 3D")
-            if xdim == 1:
-                x = x[:, np.newaxis]
-            if ydim == 1:
-                y = y[:, np.newaxis]
-            if x.shape[0] != y.shape[0]:
-                raise ValueError("Size of arrays must be the same")
-            nx = x.shape[1]
-            ny = y.shape[1]
-            npts = x.shape[0]
-            if nx > 1 or ny > 1:
-                raise ValueError("Arrays must be a single column")
+        xdim = x.ndim
+        ydim = y.ndim
+        if xdim > 2 or ydim > 2:
+            raise ValueError("Arrays cannot by 3D")
+        if xdim == 1:
+            x = x[:, np.newaxis]
+        if ydim == 1:
+            y = y[:, np.newaxis]
+        if x.shape[0] != y.shape[0]:
+            raise ValueError("Size of arrays must be the same")
+        nx = x.shape[1]
+        ny = y.shape[1]
+        npts = x.shape[0]
+        if nx > 1 or ny > 1:
+            raise ValueError("Arrays must be a single column")
 
         # ------------------------------------------------------------
         # Set defaults
