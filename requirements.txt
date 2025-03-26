@@ -1,5 +1,8 @@
 flake8-pyproject
+matplotlib
 numba
+pytest
 python>=3.10
 scipy
 scipy-stubs # used by mypy
+typeguard
