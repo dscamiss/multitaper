@@ -30,6 +30,6 @@ def test_multitaper_setup_invalid_arg_values(x: npt.NDArray) -> None:
     with pytest.raises(ValueError):
         MultitaperSetup(x=x, n_fft=x.size // 2)
     with pytest.raises(ValueError):
-        MultitaperSetup(x=x, weighting_scheme=666)
+        MultitaperSetup(x=x, weighting_scheme=666)  # type: ignore[arg-type]
     with pytest.raises(ValueError):
         MultitaperSetup(x=x, water_level=-1.0)
