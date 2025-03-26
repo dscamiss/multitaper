@@ -36,8 +36,8 @@ import numpy as np
 import scipy
 from scipy import signal
 
-import multitaper.mtspec as spec
-import multitaper.utils as utils
+import src.multitaper.mtspec as spec
+import src.multitaper.utils as utils
 
 
 class MTCross:

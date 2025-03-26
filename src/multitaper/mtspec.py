@@ -27,7 +27,7 @@ import numpy as np
 import scipy
 import scipy.signal as signal
 
-import multitaper.utils as utils
+import src.multitaper.utils as utils
 
 # -------------------------------------------------------------------------
 # MTSPEC main code

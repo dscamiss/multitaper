@@ -4,7 +4,7 @@ import numpy as np
 import numpy.typing as npt
 import pytest
 
-from multitaper.custom_types import MultitaperSetup
+from src.multitaper.custom_types import MultitaperSetup
 
 
 @pytest.fixture(name="x")
