@@ -1,9 +1,13 @@
 [tool.flake8]
-  exclude = ["dev", "examples"]
-  ignore = "E203"
-  max-line-length = 88
+exclude = ["dev", "examples"]
+ignore = "E203"
+max-line-length = 88
 
 [tool.mypy]
-  [[tool.mypy.overrides]]
+[[tool.mypy.overrides]]
   module = "numba"
-  ignore_missing_imports = true
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
