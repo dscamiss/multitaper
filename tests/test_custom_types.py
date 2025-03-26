@@ -13,8 +13,8 @@ def fixture_x() -> npt.NDArray:
     return np.random.random(1337)
 
 
-def test_multitaper_setup_invalid_arg_values(x: npt.NDArray) -> None:
-    """Test `MultitaperSetup` with invalid arg types."""
+def test_multitaper_setup_invalid_args(x: npt.NDArray) -> None:
+    """Test `MultitaperSetup` with invalid args."""
     with pytest.raises(ValueError):
         MultitaperSetup(x=np.random.random((10, 10)))
     with pytest.raises(ValueError):
