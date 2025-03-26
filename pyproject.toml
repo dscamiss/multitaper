@@ -1,5 +1,5 @@
 [tool.flake8]
-  exclude = "dev"
+  exclude = ["dev", "examples"]
   ignore = "E203"
   max-line-length = 88
 
