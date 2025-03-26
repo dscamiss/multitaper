@@ -3,5 +3,4 @@ matplotlib
 numba
 pytest
 scipy
-scipy-stubs # used by mypy
 typeguard

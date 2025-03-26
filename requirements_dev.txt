@@ -1,0 +1,2 @@
+-r requirements.txt
+scipy-stubs # used by mypy
