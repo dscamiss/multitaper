@@ -12,20 +12,25 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../../multitaper'))
+
+sys.path.insert(0, os.path.abspath("../../multitaper"))
 
 # -- Mock modules ------------------------------------------------------------
-autodoc_mock_imports = ['multitaper','multitaper.mtcross','multitaper.mtspec',
-           'multitaper.utils']
+autodoc_mock_imports = [
+    "multitaper",
+    "multitaper.mtcross",
+    "multitaper.mtspec",
+    "multitaper.utils",
+]
 
 # -- Project information -----------------------------------------------------
 
-project = 'multitaper'
-copyright = '2022, German A. Prieto'
-author = 'German A. Prieto'
+project = "multitaper"
+copyright = "2022, German A. Prieto"
+author = "German A. Prieto"
 
 # The full version, including alpha/beta/rc tags
-release = '1.1.3'
+release = "1.1.3"
 
 
 # -- General configuration ---------------------------------------------------
@@ -34,15 +39,15 @@ release = '1.1.3'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx.ext.duration',
-    'sphinx.ext.doctest',
-    'sphinx.ext.autodoc',
-    'sphinx.ext.autosummary',
+    "sphinx.ext.duration",
+    "sphinx.ext.doctest",
+    "sphinx.ext.autodoc",
+    "sphinx.ext.autosummary",
 ]
 autosummary_generate = True  # Turn on sphinx.ext.autosummary
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+templates_path = ["_templates"]
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -55,7 +60,7 @@ exclude_patterns = []
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'alabaster'
+html_theme = "alabaster"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
